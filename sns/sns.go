@@ -24,7 +24,9 @@ func (sns *SNS) query(method string, params map[string]string, responseType inte
 	response, err := sns.service.Query(method, "/", params)
 	if err != nil {
 		return err
-	} else if response.StatusCode != http.StatusOK {
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
 		return sns.service.BuildError(response)
 	} else {
 		return xml.NewDecoder(response.Body).Decode(responseType)
